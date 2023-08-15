@@ -137,9 +137,14 @@ def list_parking_space():
 
         # Prompts the user for hourly price
         hourly_price = simpledialog.askfloat("Hourly Price", 
-        "Enter hourly price for the parking space:")
+        "Enter hourly price for the parking space (1-1000):")
         if hourly_price is None:
             return  # If the User canceled then return
+
+        #Allows only a value between 1-1000 for hourly price
+        if not 1 <= hourly_price <= 1000:
+            messagebox.showwarning("Warning", "Hourly price must be between 1 and 1000.")
+            return
 
         encrypted_address = encrypt(full_address)
 
@@ -175,7 +180,7 @@ def book_parking_space():
     selected_listing_parts = listings[selected_space].strip().split(",", 2)
 
     if len(selected_listing_parts) != 3:  # Verify if the split produces three parts
-        messagebox.showerror("Error", "Invalid listing format in listings.txt")
+        messagebox.showerror("Error", "Invalid listing format in listings")
         return
 
     selected_listing, hourly_price = selected_listing_parts[1], selected_listing_parts[2]  # Skips the encryption key
@@ -186,15 +191,20 @@ def book_parking_space():
         with open("DB/current_user.txt", "r") as current_user_file:
             user_id, username = current_user_file.read().strip().split(", ")
     except FileNotFoundError:
-        messagebox.showerror("Error", "current_user.txt not found!")
+        messagebox.showerror("Error", "Please login first!")
         return
     except ValueError:
-        messagebox.showerror("Error", "Invalid format in current_user.txt")
+        messagebox.showerror("Error", "Please login first!")
         return
 
-    duration = simpledialog.askinteger("Booking Duration", "Enter booking duration in hours:")
+    duration = simpledialog.askinteger("Booking Duration", "Enter booking duration in hours (1-24):")
     if duration is None:
         return  # If the User canceled then return
+
+    #Allows only a value between 1-24 for booking duration
+    if not 1 <= duration <= 24:
+        messagebox.showwarning("Warning", "Booking duration must be between 1 and 24.")
+        return
 
     total_cost = float(hourly_price) * duration
 
